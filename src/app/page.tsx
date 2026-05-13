@@ -49,14 +49,16 @@ export default function Home() {
             Sonnet 4.6.
           </p>
           <p>
+            Built by{" "}
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/in/lakshya-jain-duke"
               target="_blank"
               rel="noopener noreferrer"
               className="underline-offset-4 hover:underline"
             >
-              LinkedIn
-            </a>
+              Lakshya Jain
+            </a>{" "}
+            on LinkedIn
           </p>
         </footer>
       </main>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Check, RotateCcw } from "lucide-react";
+import { useMemo } from "react";
+import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -54,28 +54,10 @@ const PRESETS: { label: string; description: string; scenario: Scenario }[] = [
   },
 ];
 
-function scenariosEqual(a: Scenario, b: Scenario): boolean {
-  return (
-    a.leadTimeSlipWeeks === b.leadTimeSlipWeeks &&
-    a.leadTimeSlipComponentId === b.leadTimeSlipComponentId &&
-    a.demandSpikePct === b.demandSpikePct &&
-    a.supplierCapCutPct === b.supplierCapCutPct &&
-    a.supplierCapCutSupplier === b.supplierCapCutSupplier
-  );
-}
-
 export function ScenarioPanel() {
   const bom = useStore((s) => s.bom);
   const scenario = useStore((s) => s.scenario);
   const setScenario = useStore((s) => s.setScenario);
-
-  const [draft, setDraft] = useState<Scenario>(scenario);
-
-  // Keep local draft in sync when the store scenario changes externally
-  // (preset clicks, reset, etc.).
-  useEffect(() => {
-    setDraft(scenario);
-  }, [scenario]);
 
   const suppliers = useMemo(
     () => Array.from(new Set(bom.map((c) => c.supplier))).sort(),
@@ -87,14 +69,8 @@ export function ScenarioPanel() {
     return (id: string | null) => (id ? (map.get(id) ?? id) : null);
   }, [bom]);
 
-  const dirty = !scenariosEqual(draft, scenario);
-
-  function updateDraft(patch: Partial<Scenario>) {
-    setDraft((d) => ({ ...d, ...patch }));
-  }
-
-  function applyDraft() {
-    setScenario(draft);
+  function update(patch: Partial<Scenario>) {
+    setScenario({ ...scenario, ...patch });
   }
 
   function applyPreset(preset: Scenario) {
@@ -139,9 +115,9 @@ export function ScenarioPanel() {
             Lead time slip
           </Label>
           <Select
-            value={draft.leadTimeSlipComponentId ?? NONE_VALUE}
+            value={scenario.leadTimeSlipComponentId ?? NONE_VALUE}
             onValueChange={(v) =>
-              updateDraft({
+              update({
                 leadTimeSlipComponentId: v === NONE_VALUE ? null : String(v),
               })
             }
@@ -170,15 +146,15 @@ export function ScenarioPanel() {
                 min={0}
                 max={12}
                 step={1}
-                value={[draft.leadTimeSlipWeeks]}
+                value={[scenario.leadTimeSlipWeeks]}
                 onValueChange={(v) =>
-                  updateDraft({
+                  update({
                     leadTimeSlipWeeks: Array.isArray(v) ? v[0] : Number(v),
                   })
                 }
               />
               <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                +{draft.leadTimeSlipWeeks}w
+                +{scenario.leadTimeSlipWeeks}w
               </span>
             </div>
             <div className="flex justify-between pr-[4.75rem] text-[10px] text-muted-foreground tabular-nums">
@@ -196,16 +172,16 @@ export function ScenarioPanel() {
                 min={-50}
                 max={100}
                 step={5}
-                value={[draft.demandSpikePct]}
+                value={[scenario.demandSpikePct]}
                 onValueChange={(v) =>
-                  updateDraft({
+                  update({
                     demandSpikePct: Array.isArray(v) ? v[0] : Number(v),
                   })
                 }
               />
               <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                {draft.demandSpikePct > 0 ? "+" : ""}
-                {draft.demandSpikePct}%
+                {scenario.demandSpikePct > 0 ? "+" : ""}
+                {scenario.demandSpikePct}%
               </span>
             </div>
             <div className="flex justify-between pr-[4.75rem] text-[10px] text-muted-foreground tabular-nums">
@@ -220,9 +196,9 @@ export function ScenarioPanel() {
             Supplier capacity cut
           </Label>
           <Select
-            value={draft.supplierCapCutSupplier ?? NONE_VALUE}
+            value={scenario.supplierCapCutSupplier ?? NONE_VALUE}
             onValueChange={(v) =>
-              updateDraft({
+              update({
                 supplierCapCutSupplier: v === NONE_VALUE ? null : String(v),
               })
             }
@@ -251,15 +227,15 @@ export function ScenarioPanel() {
                 min={0}
                 max={100}
                 step={5}
-                value={[draft.supplierCapCutPct]}
+                value={[scenario.supplierCapCutPct]}
                 onValueChange={(v) =>
-                  updateDraft({
+                  update({
                     supplierCapCutPct: Array.isArray(v) ? v[0] : Number(v),
                   })
                 }
               />
               <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                -{draft.supplierCapCutPct}%
+                -{scenario.supplierCapCutPct}%
               </span>
             </div>
             <div className="flex justify-between pr-[4.75rem] text-[10px] text-muted-foreground tabular-nums">
@@ -268,23 +244,6 @@ export function ScenarioPanel() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="flex items-center justify-between gap-3 border-t pt-3">
-        <span className="text-xs text-muted-foreground">
-          {dirty
-            ? "Pending changes. Click Apply to update the plan."
-            : "Plan is in sync with the current scenario."}
-        </span>
-        <Button
-          size="sm"
-          onClick={applyDraft}
-          disabled={!dirty}
-          title="Apply the staged scenario to the MRP and risk views"
-        >
-          <Check className="size-3" />
-          Apply scenario
-        </Button>
       </div>
     </div>
   );

@@ -55,25 +55,25 @@ function RiskRow({ score, component }: RankedRow) {
       className="rounded-md border p-3 transition-colors hover:bg-muted/40"
       style={{ borderColor: `${color}55` }}
     >
-      <div className="mb-2 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-2">
-          <span
-            className="inline-flex size-5 items-center justify-center rounded-full text-[10px] font-semibold tabular-nums"
-            style={{ backgroundColor: `${color}33`, color }}
-          >
-            {score.rank}
-          </span>
-          <span className="font-medium">{component.name}</span>
-        </div>
+      <div className="mb-2 flex items-start gap-3">
         <span
-          className="text-sm font-semibold tabular-nums"
+          className="inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums"
+          style={{ backgroundColor: `${color}33`, color }}
+        >
+          {score.rank}
+        </span>
+        <span className="min-w-0 flex-1 break-words text-sm font-medium leading-snug">
+          {component.name}
+        </span>
+        <span
+          className="shrink-0 text-base font-semibold tabular-nums"
           style={{ color }}
         >
           {score.composite.toFixed(2)}
         </span>
       </div>
       <div
-        className="h-4 w-full overflow-hidden rounded-md"
+        className="h-3 w-full overflow-hidden rounded-md"
         style={{ backgroundColor: `${color}1a` }}
       >
         <div
@@ -85,10 +85,10 @@ function RiskRow({ score, component }: RankedRow) {
           }}
         />
       </div>
-      <div className="mt-2 flex flex-wrap gap-1">
-        <ScoreChip label="LT" value={score.leadTimeScore} />
-        <ScoreChip label="Src" value={score.sourceScore} />
-        <ScoreChip label="Geo" value={score.geoScore} />
+      <div className="mt-2 grid grid-cols-3 gap-1.5">
+        <ScoreChip label="Lead time" value={score.leadTimeScore} />
+        <ScoreChip label="Source" value={score.sourceScore} />
+        <ScoreChip label="Region" value={score.geoScore} />
       </div>
     </div>
   );
@@ -98,11 +98,11 @@ function ScoreChip({ label, value }: { label: string; value: number }) {
   const color = heatColor(value);
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] tabular-nums"
+      className="flex items-center justify-between gap-1.5 rounded-md border px-2 py-1 text-[11px] tabular-nums"
       style={{ borderColor: `${color}66`, color, backgroundColor: `${color}14` }}
     >
-      <span className="text-muted-foreground">{label}</span>
-      {value.toFixed(2)}
+      <span className="truncate text-muted-foreground">{label}</span>
+      <span className="font-medium">{value.toFixed(2)}</span>
     </span>
   );
 }
