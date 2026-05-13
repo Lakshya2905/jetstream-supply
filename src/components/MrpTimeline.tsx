@@ -34,13 +34,7 @@ export function MrpTimeline() {
     return aggregate(rows, bom);
   }, [bom, demand, scenario]);
 
-  const shortageScatter = useMemo(
-    () =>
-      data
-        .filter((d) => d.shortageTotal > 0)
-        .map((d) => ({ ...d, value: d.grossReq })),
-    [data],
-  );
+  const weekTicks = useMemo(() => data.map((d) => d.week), [data]);
 
   return (
     <div className="h-[340px] w-full">
@@ -52,6 +46,10 @@ export function MrpTimeline() {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="week"
+            type="number"
+            domain={[weekTicks[0] ?? 1, weekTicks[weekTicks.length - 1] ?? 12]}
+            ticks={weekTicks}
+            allowDuplicatedCategory={false}
             stroke="var(--muted-foreground)"
             tick={{ fontSize: 12 }}
             tickFormatter={(w) => `W${w}`}
@@ -80,8 +78,7 @@ export function MrpTimeline() {
             fillOpacity={0.12}
           />
           <Scatter
-            data={shortageScatter}
-            dataKey="value"
+            dataKey="shortageTotal"
             name="Shortage"
             fill="#ef4444"
             shape={(props: unknown) => renderShortageDot(props, data)}
@@ -131,7 +128,12 @@ function formatShort(value: number): string {
 
 function renderShortageDot(props: unknown, data: WeekPoint[]) {
   const p = props as { cx?: number; cy?: number; payload?: WeekPoint };
-  if (typeof p.cx !== "number" || typeof p.cy !== "number" || !p.payload) {
+  if (
+    typeof p.cx !== "number" ||
+    typeof p.cy !== "number" ||
+    !p.payload ||
+    p.payload.shortageTotal <= 0
+  ) {
     return <g />;
   }
   const max = Math.max(...data.map((d) => d.shortageTotal), 1);

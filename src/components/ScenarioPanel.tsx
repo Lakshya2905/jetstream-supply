@@ -148,7 +148,11 @@ export function ScenarioPanel() {
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a component">
-                {componentName(draft.leadTimeSlipComponentId) ?? "Select a component"}
+                {(value: unknown) => {
+                  const v = value == null ? "" : String(value);
+                  if (!v || v === NONE_VALUE) return "Select a component";
+                  return componentName(v) ?? "Select a component";
+                }}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -160,42 +164,54 @@ export function ScenarioPanel() {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-3 pt-1">
-            <Slider
-              min={0}
-              max={12}
-              step={1}
-              value={[draft.leadTimeSlipWeeks]}
-              onValueChange={(v) =>
-                updateDraft({
-                  leadTimeSlipWeeks: Array.isArray(v) ? v[0] : Number(v),
-                })
-              }
-            />
-            <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-              +{draft.leadTimeSlipWeeks}w
-            </span>
+          <div className="space-y-1 pt-1">
+            <div className="flex items-center gap-3">
+              <Slider
+                min={0}
+                max={12}
+                step={1}
+                value={[draft.leadTimeSlipWeeks]}
+                onValueChange={(v) =>
+                  updateDraft({
+                    leadTimeSlipWeeks: Array.isArray(v) ? v[0] : Number(v),
+                  })
+                }
+              />
+              <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                +{draft.leadTimeSlipWeeks}w
+              </span>
+            </div>
+            <div className="flex justify-between pr-[4.75rem] text-[10px] text-muted-foreground tabular-nums">
+              <span>0w</span>
+              <span>+12w</span>
+            </div>
           </div>
         </div>
 
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">Demand spike</Label>
-          <div className="flex items-center gap-3 pt-7">
-            <Slider
-              min={-50}
-              max={100}
-              step={5}
-              value={[draft.demandSpikePct]}
-              onValueChange={(v) =>
-                updateDraft({
-                  demandSpikePct: Array.isArray(v) ? v[0] : Number(v),
-                })
-              }
-            />
-            <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-              {draft.demandSpikePct > 0 ? "+" : ""}
-              {draft.demandSpikePct}%
-            </span>
+          <div className="space-y-1 pt-7">
+            <div className="flex items-center gap-3">
+              <Slider
+                min={-50}
+                max={100}
+                step={5}
+                value={[draft.demandSpikePct]}
+                onValueChange={(v) =>
+                  updateDraft({
+                    demandSpikePct: Array.isArray(v) ? v[0] : Number(v),
+                  })
+                }
+              />
+              <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                {draft.demandSpikePct > 0 ? "+" : ""}
+                {draft.demandSpikePct}%
+              </span>
+            </div>
+            <div className="flex justify-between pr-[4.75rem] text-[10px] text-muted-foreground tabular-nums">
+              <span>-50%</span>
+              <span>+100%</span>
+            </div>
           </div>
         </div>
 
@@ -213,7 +229,11 @@ export function ScenarioPanel() {
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a supplier">
-                {draft.supplierCapCutSupplier ?? "Select a supplier"}
+                {(value: unknown) => {
+                  const v = value == null ? "" : String(value);
+                  if (!v || v === NONE_VALUE) return "Select a supplier";
+                  return v;
+                }}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -225,21 +245,27 @@ export function ScenarioPanel() {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-3 pt-1">
-            <Slider
-              min={0}
-              max={100}
-              step={5}
-              value={[draft.supplierCapCutPct]}
-              onValueChange={(v) =>
-                updateDraft({
-                  supplierCapCutPct: Array.isArray(v) ? v[0] : Number(v),
-                })
-              }
-            />
-            <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-              -{draft.supplierCapCutPct}%
-            </span>
+          <div className="space-y-1 pt-1">
+            <div className="flex items-center gap-3">
+              <Slider
+                min={0}
+                max={100}
+                step={5}
+                value={[draft.supplierCapCutPct]}
+                onValueChange={(v) =>
+                  updateDraft({
+                    supplierCapCutPct: Array.isArray(v) ? v[0] : Number(v),
+                  })
+                }
+              />
+              <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                -{draft.supplierCapCutPct}%
+              </span>
+            </div>
+            <div className="flex justify-between pr-[4.75rem] text-[10px] text-muted-foreground tabular-nums">
+              <span>0%</span>
+              <span>-100%</span>
+            </div>
           </div>
         </div>
       </div>
