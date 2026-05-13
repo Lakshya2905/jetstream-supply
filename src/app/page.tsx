@@ -1,4 +1,5 @@
 import { BomTable } from "@/components/BomTable";
+import { KpiStrip } from "@/components/KpiStrip";
 import { MrpTimeline } from "@/components/MrpTimeline";
 import { RiskHeatmap } from "@/components/RiskHeatmap";
 import { ScenarioPanel } from "@/components/ScenarioPanel";
@@ -18,6 +19,8 @@ export default function Home() {
             Representative model. Not d-Matrix proprietary data.
           </p>
         </header>
+
+        <KpiStrip />
 
         <ScenarioPanel />
 
